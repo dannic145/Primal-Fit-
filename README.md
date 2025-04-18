@@ -1,4 +1,4 @@
-# Primal Fit: AI-Powered Holistic Fitness Platform 🏋️♀️
+# Primal Fit: AI-Powered Holistic Fitness Platform 🏋️
 
 **Transform Your Fitness Journey with Adaptive AI Coaching, Personalized Nutrition, and Mental Wellness Support**
 
@@ -45,4 +45,3 @@ git clone https://github.com/yourusername/primal-fit.git
 cd primal-fit
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
