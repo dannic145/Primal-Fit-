@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Input Form -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-clipboard-data"></i> Daily Update</h5>
+                </div>
+                <div class="card-body">
+                    <form id="progressForm">
+                        <div class="mb-3">
+                            <label class="form-label">Weight (kg)</label>
+                            <input type="number" step="0.1" class="form-control" name="weight" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Body Fat (%)</label>
+                            <input type="number" step="0.1" class="form-control" name="body_fat" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Calories Consumed</label>
+                            <input type="number" class="form-control" name="calories_consumed" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Calories Burned</label>
+                            <input type="number" class="form-control" name="calories_burned" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Workout Minutes</label>
+                            <input type="number" class="form-control" name="workout_duration" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save"></i> Save Progress
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizations -->
+        <div class="col-md-8">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-graph-up"></i> Progress Overview</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Weight Trend -->
+                    <div class="mb-4">
+                        <h6>Weight Trend</h6>
+                        <canvas id="weightChart"></canvas>
+                    </div>
+
+                    <!-- Calorie Balance -->
+                    <div class="mb-4">
+                        <h6>Calorie Balance</h6>
+                        <canvas id="calorieChart"></canvas>
+                    </div>
+
+                    <!-- Progress Summary -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h6>Body Fat Goal</h6>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ ((progress_data[0].body_fat / goals.body_fat) * 100) if progress_data and progress_data[0] else 0 }}%">
+                                            {{ progress_data[0].body_fat|round(1) if progress_data and progress_data[0] else 0 }}%
+                                        </div>
+                                    </div>
+                                    <small>Target: {{ goals.body_fat }}%</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h6>Weekly Workout Goal</h6>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ ((progress_data|map(attribute='workout_duration')|sum / 300) * 100) if progress_data else 0 }}%">
+                                            {{ progress_data|map(attribute='workout_duration')|sum|default(0) }}/300 mins
+                                        </div>
+                                    </div>
+                                    <small>Weekly Target: 300 minutes</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.getElementById('progressForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/api/submit-progress', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) throw new Error('Submission failed');
+        window.location.reload();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+// Initialize Charts
+new Chart(document.getElementById('weightChart'), {
+    type: 'line',
+    data: {
+        labels: {{ dates|tojson }},
+        datasets: [{
+            label: 'Weight (kg)',
+            data: {{ weights|tojson }},
+            borderColor: '#0d6efd',
+            tension: 0.1
+        }]
+    }
+});
+
+new Chart(document.getElementById('calorieChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ dates|tojson }},
+        datasets: [
+            {
+                label: 'Consumed',
+                data: {{ calories_consumed|tojson }},
+                backgroundColor: 'rgba(13, 110, 253, 0.5)'
+            },
+            {
+                label: 'Burned',
+                data: {{ calories_burned|tojson }},
+                backgroundColor: 'rgba(253, 13, 13, 0.5)'
+            }
+        ]
+    }
+});
+</script>
+{% endblock %}
