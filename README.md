@@ -1,6 +1,6 @@
 # Primal Fit: AI-Powered Holistic Fitness Platform 🏋️
 
-**Transform Your Fitness Journey with Adaptive AI Coaching, Personalized Nutrition, and Mental Wellness Support**
+**Transform Your Fitness Journey with Adaptive AI Coaching, and Personalized Nutrition Support**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
@@ -14,8 +14,6 @@
   Personalized meal plans based on dietary needs and fitness goals
 - **📈 Progress Analytics**  
   Interactive dashboards with body metrics tracking (weight, body fat, muscle mass)
-- **🧠 Mental Wellness Integration**  
-  Mindfulness exercises and stress-reduction techniques
 - **🖼️ Dynamic Content Generation**  
   AI-generated workout visuals using Stability AI/DALL-E
 - **🔒 Privacy-First Design**  
